@@ -2,19 +2,22 @@
 # SKIPUNZIP
 ##########################################################################################
 
-# If you need even more customization and prefer to do everything on your own, declare SKIPUNZIP=1 in customize.sh to skip the extraction and applying default permissions/secontext steps.
-# Be aware that by doing so, your customize.sh will then be responsible to install everything by itself.
+# 如果您需要更多的自定义，并且希望自己做所有事情
+# 请在custom.sh中声明SKIPUNZIP=1
+# 以跳过提取操作并应用默认权限/上下文上下文步骤。
+# 请注意，这样做后，您的custom.sh将负责自行安装所有内容。
 SKIPUNZIP=0
 
 ##########################################################################################
-# Replace list
+# 替换列表
 ##########################################################################################
 
-# List all directories you want to directly replace in the system
-# Check the documentations for more info why you would need this
+# 列出你想在系统中直接替换的所有目录
+# 查看文档，了解更多关于Magic Mount如何工作的信息，以及你为什么需要它
 
-# Construct your list in the following format
-# This is an example
+
+# 按照以下格式构建列表
+# 这是一个示例
 REPLACE_EXAMPLE="
 /system/app/Youtube
 /system/priv-app/SystemUI
@@ -22,30 +25,31 @@ REPLACE_EXAMPLE="
 /system/framework
 "
 
-# Construct your own list here
+# 在这里建立您自己的清单
 REPLACE="
 "
 
 ##########################################################################################
-# Permissions
+# 权限设置
 ##########################################################################################
 
 set_permissions() {
-  : # Remove this if adding to this function
+  : #如果添加到此功能，请将其删除
 
-  # Note that all files/folders in magisk module directory have the $MODPATH prefix - keep this prefix on all of your files/folders
-  # Some examples:
+  # 请注意，magisk模块目录中的所有文件/文件夹都有$MODPATH前缀-在所有文件/文件夹中保留此前缀
+  # 一些例子:
   
-  # For directories (includes files in them):
-  # set_perm_recursive  <dirname>                <owner> <group> <dirpermission> <filepermission> <contexts> (default: u:object_r:system_file:s0)
+  # 对于目录(包括文件):
+  # set_perm_recursive  <目录>                <所有者> <用户组> <目录权限> <文件权限> <上下文> (默认值是: u:object_r:system_file:s0)
   
   # set_perm_recursive $MODPATH/system/lib 0 0 0755 0644
   # set_perm_recursive $MODPATH/system/vendor/lib/soundfx 0 0 0755 0644
 
-  # For files (not in directories taken care of above)
-  # set_perm  <filename>                         <owner> <group> <permission> <contexts> (default: u:object_r:system_file:s0)
+  # 对于文件(不包括文件所在目录)
+  # set_perm  <文件名>                         <所有者> <用户组> <文件权限> <上下文> (默认值是: u:object_r:system_file:s0)
   
   # set_perm $MODPATH/system/lib/libart.so 0 0 0644
   # set_perm /data/local/tmp/file.txt 0 0 644
+
 }
 

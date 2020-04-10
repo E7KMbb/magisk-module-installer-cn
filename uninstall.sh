@@ -1,1 +1,1 @@
-# This script will be executed during uninstallation, you can write your custom uninstall rules
+# 该脚本将在卸载期间执行，您可以编写自定义卸载规则

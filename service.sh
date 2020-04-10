@@ -1,9 +1,8 @@
 #!/system/bin/sh
-# Do NOT assume where your module will be located.
-# ALWAYS use $MODDIR if you need to know where this script
-# and module is placed.
-# This will make sure your module will still work
-# if Magisk change its mount point in the future
+# 不要假设您的模块将位于何处。
+# 如果您需要知道此脚本和模块的放置位置，请使用$MODDIR
+# 这将确保您的模块仍能正常工作
+# 即使Magisk将来更改其挂载点
 MODDIR=${0%/*}
 
-# This script will be executed in late_start service mode
+# 此脚本将在late_start service 模式执行
