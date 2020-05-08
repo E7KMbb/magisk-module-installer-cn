@@ -33,12 +33,17 @@ REPLACE="
 ##########################################################################################
 
 # 如果SKIPUNZIP=1您将会需要使用以下代码
-# 需要时请去除#
-#on_install() {
+# 当然，你也可以自定义安装脚本
+# 需要时请删除#
 #  # 将 $ZIPFILE/system 提取到 $MODPATH
-#  ui_print "- Extracting module files"
+#  ui_print "- 解压模块文件"
 #  unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
-#}
+#  unzip -o "$ZIPFILE" 'module.prop' -d $MODPATH >&2
+#  unzip -o "$ZIPFILE" 'system.prop' -d $MODPATH >&2
+#  unzip -o "$ZIPFILE" 'sepolicy.rule' -d $MODPATH >&2
+#  unzip -o "$ZIPFILE" 'service.sh' -d $MODPATH >&2
+#  unzip -o "$ZIPFILE" 'post-fs-data.sh' -d $MODPATH >&2
+#  unzip -o "$ZIPFILE" 'uninstall.sh' -d $MODPATH >&2
 
 ##########################################################################################
 # 权限设置
