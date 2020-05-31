@@ -1,7 +1,7 @@
 #!/sbin/sh
 
 #################
-# Initialization
+# 初始化
 #################
 
 umask 022
@@ -11,13 +11,13 @@ ui_print() { echo "$1"; }
 
 require_new_magisk() {
   ui_print "*******************************"
-  ui_print " Please install Magisk v19.0+! "
+  ui_print " 请安装 Magisk v19.0+! "
   ui_print "*******************************"
   exit 1
 }
 
 #########################
-# Load util_functions.sh
+# 加载util_functions.sh
 #########################
 
 OUTFD=$2
@@ -30,13 +30,13 @@ mount /data 2>/dev/null
 [ $MAGISK_VER_CODE -lt 19000 ] && require_new_magisk
 
 if [ $MAGISK_VER_CODE -ge 20400 ]; then
-  # New Magisk have complete installation logic within util_functions.sh
+  # 新的Magisk在util_functions.sh中有完整的安装逻辑
   install_module
   exit 0
 fi
 
 #################
-# Legacy Support
+# 遗留支持
 #################
 
 TMPDIR=/dev/tmp
@@ -60,7 +60,7 @@ print_modname() {
   ui_print "*******************"
 }
 
-# Override abort as old scripts have some issues
+# 旧脚本有一些问题，覆盖中止
 abort() {
   ui_print "$1"
   $BOOTMODE || recovery_cleanup
@@ -72,25 +72,25 @@ abort() {
 rm -rf $TMPDIR 2>/dev/null
 mkdir -p $TMPDIR
 
-# Preperation for flashable zips
+# 准备刷入压缩包
 setup_flashable
 
-# Mount partitions
+# 安装分区
 mount_partitions
 
-# Detect version and architecture
+# 检测版本和架构
 api_level_arch_detect
 
-# Setup busybox and binaries
+# 设置BusyBox和二进制文件
 $BOOTMODE && boot_actions || recovery_actions
 
 ##############
-# Preparation
+# 准备
 ##############
 
-# Extract prop file
+# 提取prop文件
 unzip -o "$ZIPFILE" module.prop -d $TMPDIR >&2
-[ ! -f $TMPDIR/module.prop ] && abort "! Unable to extract zip file!"
+[ ! -f $TMPDIR/module.prop ] && abort "! 无法提取zip文件!"
 
 $BOOTMODE && MODDIRNAME=modules_update || MODDIRNAME=modules
 MODULEROOT=$NVBASE/$MODDIRNAME
@@ -98,43 +98,43 @@ MODID=`grep_prop id $TMPDIR/module.prop`
 MODPATH=$MODULEROOT/$MODID
 MODNAME=`grep_prop name $TMPDIR/module.prop`
 
-# Create mod paths
+# 创建模块路径
 rm -rf $MODPATH 2>/dev/null
 mkdir -p $MODPATH
 
 ##########
-# Install
+# 安装
 ##########
 
 if is_legacy_script; then
   unzip -oj "$ZIPFILE" module.prop install.sh uninstall.sh 'common/*' -d $TMPDIR >&2
 
-  # Load install script
+  # 加载安装脚本
   . $TMPDIR/install.sh
 
-  # Callbacks
+  # 函数
   print_modname
   on_install
 
-  # Custom uninstaller
+  # 自定义卸载脚本
   [ -f $TMPDIR/uninstall.sh ] && cp -af $TMPDIR/uninstall.sh $MODPATH/uninstall.sh
 
-  # Skip mount
+  # 跳过安装
   $SKIPMOUNT && touch $MODPATH/skip_mount
 
-  # prop file
+  # prop文件
   $PROPFILE && cp -af $TMPDIR/system.prop $MODPATH/system.prop
 
-  # Module info
+  # 模块信息
   cp -af $TMPDIR/module.prop $MODPATH/module.prop
 
-  # post-fs-data scripts
+  # post-fs-data脚本
   $POSTFSDATA && cp -af $TMPDIR/post-fs-data.sh $MODPATH/post-fs-data.sh
 
-  # service scripts
+  # service脚本
   $LATESTARTSERVICE && cp -af $TMPDIR/service.sh $MODPATH/service.sh
 
-  ui_print "- Setting permissions"
+  ui_print "- 设置权限"
   set_permissions
 else
   print_modname
@@ -142,49 +142,49 @@ else
   unzip -o "$ZIPFILE" customize.sh -d $MODPATH >&2
 
   if ! grep -q '^SKIPUNZIP=1$' $MODPATH/customize.sh 2>/dev/null; then
-    ui_print "- Extracting module files"
+    ui_print "- 提取模块文件"
     unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
 
-    # Default permissions
+    # 默认权限
     set_perm_recursive $MODPATH 0 0 0755 0644
   fi
 
-  # Load customization script
+  # 加载自定义脚本
   [ -f $MODPATH/customize.sh ] && . $MODPATH/customize.sh
 fi
 
-# Handle replace folders
+# 处理替换文件夹
 for TARGET in $REPLACE; do
-  ui_print "- Replace target: $TARGET"
+  ui_print "- 替换目标: $TARGET"
   mktouch $MODPATH$TARGET/.replace
 done
 
 if $BOOTMODE; then
-  # Update info for Magisk Manager
+  # 更新Magisk Manager的信息
   mktouch $NVBASE/modules/$MODID/update
   cp -af $MODPATH/module.prop $NVBASE/modules/$MODID/module.prop
 fi
 
-# Copy over custom sepolicy rules
+# 复制自定义sepolicy规则
 if [ -f $MODPATH/sepolicy.rule -a -e $PERSISTDIR ]; then
-  ui_print "- Installing custom sepolicy patch"
+  ui_print "- 安装自定义Sepolicy补丁"
   PERSISTMOD=$PERSISTDIR/magisk/$MODID
   mkdir -p $PERSISTMOD
   cp -af $MODPATH/sepolicy.rule $PERSISTMOD/sepolicy.rule
 fi
 
-# Remove stuffs that don't belong to modules
+# 删除不属于模块的东西
 rm -rf \
 $MODPATH/system/placeholder $MODPATH/customize.sh \
 $MODPATH/README.md $MODPATH/.git* 2>/dev/null
 
 #############
-# Finalizing
+# 完成
 #############
 
 cd /
 $BOOTMODE || recovery_cleanup
 rm -rf $TMPDIR
 
-ui_print "- Done"
+ui_print "- 完成"
 exit 0
